@@ -1,6 +1,83 @@
-apiKey: "AIzaSyApHCIyltmJZbO0aQhX5KY38_nbrC5fHGI"
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Liga Typerów</title>
+<style>
+body{
+    font-family:Arial,sans-serif;
+    background:#f4f4f4;
+    padding:20px;
+}
+.container{
+    max-width:900px;
+    margin:auto;
+    background:white;
+    padding:20px;
+    border-radius:10px;
+}
+button{
+    padding:10px 20px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>⚽ Liga Typerów</h1>
+
+    <button id="loginBtn">Zaloguj przez Google</button>
+
+    <p id="userInfo">Nie zalogowano</p>
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+
+import {
+getAuth,
+GoogleAuthProvider,
+signInWithPopup,
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyApHCIyltmJZbO0aQhX5KY38_nbrC5fHGI",
 authDomain: "ligatyperow-8bb23.firebaseapp.com",
-projectId: "ligatyperow-8bb23"
-storageBucket: "ligatyperow-8bb23.firebasestorage.app"
-messagingSenderId: "41148235881"
+projectId: "ligatyperow-8bb23",
+storageBucket: "ligatyperow-8bb23.firebasestorage.app",
+messagingSenderId: "41148235881",
 appId: "1:41148235881:web:86d31b86c4a0589fcaa2f8"
+
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+document.getElementById("loginBtn")
+.addEventListener("click", async ()=>{
+
+const provider = new GoogleAuthProvider();
+
+await signInWithPopup(auth, provider);
+
+});
+
+onAuthStateChanged(auth,(user)=>{
+
+if(user){
+
+document.getElementById("userInfo").innerHTML =
+"Zalogowany: " + user.displayName;
+
+}
+
+});
+
+</script>
+
+</body>
+</html>
