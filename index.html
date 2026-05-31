@@ -174,9 +174,42 @@ html += `
         style="width:60px;"
     >
 
-    <button onclick="savePrediction('${doc.id}')">
-        Zapisz typ
-    </button>
+   <button onclick="savePrediction('${doc.id}')">
+    Zapisz typ
+</button>
+
+<hr>
+
+<h4>Wynik końcowy</h4>
+
+<input
+    type="number"
+    min="0"
+    id="result_home_${doc.id}"
+    placeholder="0"
+    style="width:60px;"
+>
+
+:
+
+<input
+    type="number"
+    min="0"
+    id="result_away_${doc.id}"
+    placeholder="0"
+    style="width:60px;"
+>
+
+<button onclick="saveResult('${doc.id}')">
+    Zapisz wynik
+</button>
+
+${match.finished ? `
+<p>
+🏁 Wynik końcowy:
+<b>${match.homeResult}:${match.awayResult}</b>
+</p>
+` : ""}
 
 </div>
 `;
