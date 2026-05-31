@@ -230,6 +230,7 @@ html += `
 
 <hr>
 
+${currentUser && currentUser.email === ADMIN_EMAIL ? `
 <h4>Wynik końcowy</h4>
 
 <input
@@ -253,6 +254,7 @@ html += `
 <button onclick="saveResult('${doc.id}')">
     Zapisz wynik
 </button>
+` : ""}
 
 ${match.finished ? `
 <p>
