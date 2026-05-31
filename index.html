@@ -56,13 +56,13 @@ Brak meczów
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-
+    
 import {
-getAuth,
-GoogleAuthProvider,
-signInWithPopup,
-onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+getFirestore,
+collection,
+addDoc
+}
+from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
 const firebaseConfig = {
 
@@ -77,6 +77,7 @@ measurementId: "G-F176F0NY3D"
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+    const db = getFirestore(app);
     const ADMIN_EMAIL = "kimiszymi@gmail.com";
 
 document.getElementById("loginBtn")
@@ -111,6 +112,38 @@ document.getElementById("userInfo").innerHTML =
 "Nie zalogowano";
 
 }
+
+});
+
+document.getElementById("addMatchBtn")
+.addEventListener("click", async ()=>{
+
+const homeTeam =
+document.getElementById("homeTeam").value;
+
+const awayTeam =
+document.getElementById("awayTeam").value;
+
+if(!homeTeam || !awayTeam){
+
+alert("Uzupełnij drużyny");
+return;
+
+}
+
+await addDoc(
+collection(db,"matches"),
+{
+homeTeam,
+awayTeam,
+createdAt: Date.now()
+}
+);
+
+alert("Mecz dodany");
+
+document.getElementById("homeTeam").value = "";
+document.getElementById("awayTeam").value = "";
 
 });
 
