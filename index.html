@@ -136,16 +136,19 @@ let html = "";
 
 snapshot.forEach((doc)=>{
 
-    const match = doc.data();
+const match = doc.data();
 
-    html += `
-    <div style="padding:10px;border:1px solid #ccc;margin:10px 0;">
-        ⚽ ${match.homeTeam} vs ${match.awayTeam}
-    </div>
-    `;
+html += `
+<div
+    data-id="${doc.id}"
+    style="padding:10px;border:1px solid #ccc;margin:10px 0;"
+>
+    ⚽ ${match.homeTeam} vs ${match.awayTeam}
+</div>
+`;
 
 });
-
+    
 if(html === ""){
     html = "Brak meczów";
 }
