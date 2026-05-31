@@ -74,7 +74,9 @@ getDocs,
 doc,
 setDoc,
 getDoc,
-updateDoc
+updateDoc,
+query,
+where
 }
 from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
@@ -344,11 +346,83 @@ finished: true
 }
 );
 
-alert("Wynik zapisany");
+const predictionsQuery = query(
+collection(db,"predictions"),
+where("matchId","==",matchId)
+);
+
+const predictionsSnapshot =
+await getDocs(predictionsQuery);
+
+for(const predictionDoc of predictionsSnapshot.docs){
+
+const prediction = predictionDoc.data();
+
+let points = 0;
+
+const predictedHome =
+prediction.homeScore;
+
+const predictedAway =
+prediction.awayScore;
+
+const actualHome =
+Number(homeResult);
+
+const actualAway =
+Number(awayResult);
+
+// dokładny wynik = 2 pkt
+
+if(
+predictedHome === actualHome &&
+predictedAway === actualAway
+){
+
+points = 2;
+
+}
+
+// trafiony zwycięzca lub remis = 1 pkt
+
+else{
+
+const predictedOutcome =
+predictedHome > predictedAway
+? "HOME"
+: predictedHome < predictedAway
+? "AWAY"
+: "DRAW";
+
+const actualOutcome =
+actualHome > actualAway
+? "HOME"
+: actualHome < actualAway
+? "AWAY"
+: "DRAW";
+
+if(predictedOutcome === actualOutcome){
+
+points = 1;
+
+}
+
+}
+
+await updateDoc(
+doc(db,"predictions",predictionDoc.id),
+{
+points
+}
+);
+
+}
+
+alert("Wynik zapisany i punkty naliczone");
 
 loadMatches();
 
-};
+);
 
 loadMatches();
 
