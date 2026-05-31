@@ -222,11 +222,11 @@ html += `
     Zapisz typ
 </button>
 
-<button onclick="showPredictions('${doc.id}')">
-    📋 Pokaż typy
+<button onclick="togglePredictions('${doc.id}')">
+📋 Typy meczu
 </button>
 
-<div id="predictions_${doc.id}"></div>
+<div id="predictions_${doc.id}" style="display:none;"></div>
 
 <hr>
 
@@ -512,6 +512,20 @@ html;
 
 window.showPredictions = async function(matchId){
 
+const container =
+document.getElementById(`predictions_${matchId}`);
+
+if(container.innerHTML !== ""){
+
+    container.innerHTML = "";
+
+    document.getElementById(`btn_${matchId}`).innerHTML =
+    "📋 Pokaż typy";
+    
+    return;
+
+}
+
 const predictionsQuery = query(
     collection(db,"predictions"),
     where("matchId","==",matchId)
@@ -554,13 +568,40 @@ predictionsSnapshot.forEach((predictionDoc)=>{
     `;
 });
 
-document.getElementById(`predictions_${matchId}`).innerHTML =
-html;
+container.innerHTML = html;
+
+document.getElementById(`btn_${matchId}`).innerHTML =
+"❌ Ukryj typy";
 
 };
 
+let rankingVisible = false;
+
 document.getElementById("showRankingBtn")
-.addEventListener("click", ()=>{
+.addEventListener("click", async ()=>{
+
+const rankingDiv =
+document.getElementById("rankingList");
+
+if(rankingVisible){
+
+    rankingDiv.innerHTML = "";
+    rankingVisible = false;
+
+    document.getElementById("showRankingBtn").innerHTML =
+    "🏆 Ranking";
+
+}else{
+
+    await loadRanking();
+    rankingVisible = true;
+
+    document.getElementById("showRankingBtn").innerHTML =
+    "❌ Ukryj ranking";
+
+}
+
+});
 
 loadRanking();
 
