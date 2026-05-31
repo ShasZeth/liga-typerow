@@ -338,17 +338,17 @@ if(homeResult === "" || awayResult === ""){
 }
 
 await updateDoc(
-doc(db,"matches",matchId),
-{
-homeResult: Number(homeResult),
-awayResult: Number(awayResult),
-finished: true
-}
+    doc(db,"matches",matchId),
+    {
+        homeResult: Number(homeResult),
+        awayResult: Number(awayResult),
+        finished: true
+    }
 );
 
 const predictionsQuery = query(
-collection(db,"predictions"),
-where("matchId","==",matchId)
+    collection(db,"predictions"),
+    where("matchId","==",matchId)
 );
 
 const predictionsSnapshot =
@@ -356,65 +356,55 @@ await getDocs(predictionsQuery);
 
 for(const predictionDoc of predictionsSnapshot.docs){
 
-const prediction = predictionDoc.data();
+    const prediction = predictionDoc.data();
 
-let points = 0;
+    let points = 0;
 
-const predictedHome =
-prediction.homeScore;
+    const predictedHome = prediction.homeScore;
+    const predictedAway = prediction.awayScore;
 
-const predictedAway =
-prediction.awayScore;
+    const actualHome = Number(homeResult);
+    const actualAway = Number(awayResult);
 
-const actualHome =
-Number(homeResult);
+    // Dokładny wynik = 2 pkt
 
-const actualAway =
-Number(awayResult);
+    if(
+        predictedHome === actualHome &&
+        predictedAway === actualAway
+    ){
 
-// dokładny wynik = 2 pkt
+        points = 2;
 
-if(
-predictedHome === actualHome &&
-predictedAway === actualAway
-){
+    }else{
 
-points = 2;
+        // Trafiony zwycięzca lub remis = 1 pkt
 
-}
+        const predictedOutcome =
+            predictedHome > predictedAway
+            ? "HOME"
+            : predictedHome < predictedAway
+            ? "AWAY"
+            : "DRAW";
 
-// trafiony zwycięzca lub remis = 1 pkt
+        const actualOutcome =
+            actualHome > actualAway
+            ? "HOME"
+            : actualHome < actualAway
+            ? "AWAY"
+            : "DRAW";
 
-else{
+        if(predictedOutcome === actualOutcome){
+            points = 1;
+        }
 
-const predictedOutcome =
-predictedHome > predictedAway
-? "HOME"
-: predictedHome < predictedAway
-? "AWAY"
-: "DRAW";
+    }
 
-const actualOutcome =
-actualHome > actualAway
-? "HOME"
-: actualHome < actualAway
-? "AWAY"
-: "DRAW";
-
-if(predictedOutcome === actualOutcome){
-
-points = 1;
-
-}
-
-}
-
-await updateDoc(
-doc(db,"predictions",predictionDoc.id),
-{
-points
-}
-);
+    await updateDoc(
+        doc(db,"predictions",predictionDoc.id),
+        {
+            points: points
+        }
+    );
 
 }
 
@@ -422,7 +412,7 @@ alert("Wynik zapisany i punkty naliczone");
 
 loadMatches();
 
-loadMatches();
+};
 
 </script>
 
