@@ -28,8 +28,11 @@ button{
     <h1>⚽ Liga Typerów</h1>
 
     <button id="loginBtn">Zaloguj przez Google</button>
-
     <p id="userInfo">Nie zalogowano</p>
+
+<button id="logoutBtn" style="display:none;">
+Wyloguj
+</button>
     
     <div id="adminPanel" style="display:none;margin-top:20px;">
 
@@ -71,7 +74,8 @@ import {
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
-  onAuthStateChanged
+  onAuthStateChanged,
+  signOut
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
 import {
@@ -114,11 +118,26 @@ const provider = new GoogleAuthProvider();
 
 await signInWithPopup(auth, provider);
 
+document.getElementById("logoutBtn")
+.addEventListener("click", async ()=>{
+
+await signOut(auth);
+
+alert("Wylogowano");
+
 });
 
 onAuthStateChanged(auth,(user)=>{
 
 if(user){
+
+currentUser = user;
+
+document.getElementById("logoutBtn").style.display =
+"inline-block";
+
+document.getElementById("loginBtn").style.display =
+"none";
 
 currentUser = user;
 
@@ -144,6 +163,12 @@ document.getElementById("userInfo").innerHTML =
 
 document.getElementById("adminPanel").style.display =
 "none";
+
+document.getElementById("logoutBtn").style.display =
+"none";
+
+document.getElementById("loginBtn").style.display =
+"inline-block";
 
 }
 
