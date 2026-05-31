@@ -126,32 +126,37 @@ document.getElementById("userInfo").innerHTML =
 document.getElementById("addMatchBtn")
     
 async function loadMatches(){
-    console.log("Ładowanie meczów...");
+
+console.log("Ładowanie meczów...");
 
 const snapshot =
 await getDocs(collection(db,"matches"));
-    console.log("Liczba dokumentów:", snapshot.size);
+
+console.log("Liczba dokumentów:", snapshot.size);
 
 let html = "";
 
 snapshot.forEach((doc)=>{
 
-const match = doc.data();
+    const match = doc.data();
 
-html += `
+    html += `
+    <div style="padding:10px;border:1px solid #ccc;margin:10px 0;">
+        ⚽ ${match.homeTeam} vs ${match.awayTeam}
+    </div>
+    `;
 
 });
 
 if(html === ""){
+    html = "Brak meczów";
+}
 
-html = "Brak meczów";
+document.getElementById("matchesList").innerHTML = html;
 
 }
 
-document.getElementById("matchesList").innerHTML =
-html;
-
-}
+document.getElementById("addMatchBtn")
 .addEventListener("click", async ()=>{
 
 const homeTeam =
@@ -162,27 +167,29 @@ document.getElementById("awayTeam").value;
 
 if(!homeTeam || !awayTeam){
 
-alert("Uzupełnij drużyny");
-return;
+    alert("Uzupełnij drużyny");
+    return;
 
 }
 
 await addDoc(
-collection(db,"matches"),
-{
-homeTeam,
-awayTeam,
-createdAt: Date.now()
-}
+    collection(db,"matches"),
+    {
+        homeTeam,
+        awayTeam,
+        createdAt: Date.now()
+    }
 );
 
 alert("Mecz dodany");
-loadMatches();
 
 document.getElementById("homeTeam").value = "";
 document.getElementById("awayTeam").value = "";
 
+loadMatches();
+
 });
+
 loadMatches();
 
 </script>
