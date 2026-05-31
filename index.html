@@ -293,15 +293,11 @@ if(!homeTeam || !awayTeam){
 
 }
 
-const round =
-document.getElementById("round").value;
-
 await addDoc(
     collection(db,"matches"),
     {
         homeTeam,
         awayTeam,
-        round: Number(round),
         createdAt: Date.now()
     }
 );
@@ -514,10 +510,7 @@ html;
 
 }
 
-document.getElementById("showRankingBtn")
-.addEventListener("click", ()=>{
-
-async function showPredictions(matchId){
+window.showPredictions = async function(matchId){
 
 const predictionsQuery = query(
     collection(db,"predictions"),
@@ -561,11 +554,10 @@ predictionsSnapshot.forEach((predictionDoc)=>{
     `;
 });
 
-document.getElementById("rankingList").innerHTML =
+document.getElementById(`predictions_${matchId}`).innerHTML =
 html;
 
-}
-
+};
 
 document.getElementById("showRankingBtn")
 .addEventListener("click", ()=>{
