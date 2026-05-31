@@ -418,6 +418,59 @@ for(const predictionDoc of predictionsSnapshot.docs){
 
 alert("Wynik zapisany i punkty naliczone");
 
+async function loadRanking(){
+
+const snapshot =
+await getDocs(collection(db,"predictions"));
+
+const users = {};
+
+snapshot.forEach((doc)=>{
+
+const prediction = doc.data();
+
+if(!users[prediction.userName]){
+
+users[prediction.userName] = 0;
+
+}
+
+users[prediction.userName] +=
+prediction.points || 0;
+
+});
+
+const ranking = Object.entries(users)
+.sort((a,b)=> b[1] - a[1]);
+
+let html = "<h2>🏆 Ranking</h2>";
+
+ranking.forEach((user,index)=>{
+
+html += `
+<div style="
+padding:10px;
+margin:5px 0;
+border:1px solid #ccc;
+">
+${index + 1}. ${user[0]} - ${user[1]} pkt
+</div>
+`;
+
+});
+
+document.getElementById("rankingList").innerHTML =
+html;
+
+}
+
+document.getElementById("showRankingBtn")
+.addEventListener("click", ()=>{
+
+loadRanking();
+
+});
+
 loadMatches();
 
 };
