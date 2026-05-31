@@ -92,6 +92,9 @@ onAuthStateChanged(auth,(user)=>{
 
 if(user){
 
+console.log("Email użytkownika:", user.email);
+alert("Zalogowano jako: " + user.email);    
+
 document.getElementById("userInfo").innerHTML =
 "Zalogowany: " + user.displayName;
 
