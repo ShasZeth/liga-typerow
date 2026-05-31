@@ -72,7 +72,8 @@ collection,
 addDoc,
 getDocs,
 doc,
-setDoc
+setDoc,
+getDoc
 }
 from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
@@ -244,12 +245,25 @@ return;
 
 }
 
-await setDoc(
+const predictionRef =
 doc(
 db,
 "predictions",
 matchId + "_" + currentUser.uid
-),
+);
+
+const existingPrediction =
+await getDoc(predictionRef);
+
+if(existingPrediction.exists()){
+
+alert("Wytypowales juz swoj Wynik!");
+return;
+
+}
+ 
+await setDoc(
+predictionRef,
 {
 matchId,
 userId: currentUser.uid,
