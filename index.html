@@ -139,34 +139,36 @@ snapshot.forEach((doc)=>{
 const match = doc.data();
 
 html += `
+<div style="padding:10px;border:1px solid #ccc;margin:10px 0;">
 
-<h3>
-    ⚽ ${match.homeTeam} vs ${match.awayTeam}
-</h3>
+    <h3>
+        ⚽ ${match.homeTeam} vs ${match.awayTeam}
+    </h3>
 
-<input
-    type="number"
-    min="0"
-    id="home_${doc.id}"
-    placeholder="0"
-    style="width:60px;"
->
+    <input
+        type="number"
+        min="0"
+        id="home_${doc.id}"
+        placeholder="0"
+        style="width:60px;"
+    >
 
-:
+    :
 
-<input
-    type="number"
-    min="0"
-    id="away_${doc.id}"
-    placeholder="0"
-    style="width:60px;"
->
+    <input
+        type="number"
+        min="0"
+        id="away_${doc.id}"
+        placeholder="0"
+        style="width:60px;"
+    >
 
-<button
-    onclick="savePrediction('${doc.id}')"
->
-    Zapisz typ
-</button>
+    <button onclick="savePrediction('${doc.id}')">
+        Zapisz typ
+    </button>
+
+</div>
+`;
 
 });
     
