@@ -70,7 +70,9 @@ import {
 getFirestore,
 collection,
 addDoc,
-getDocs
+getDocs,
+doc,
+setDoc
 }
 from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
@@ -88,8 +90,11 @@ measurementId: "G-F176F0NY3D"
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const ADMIN_EMAIL = "kimiszymi@gmail.com";
+    
 const db = getFirestore(app);
+    let currentUser = null;
 
+    
 document.getElementById("loginBtn")
 .addEventListener("click", async ()=>{
 
@@ -102,6 +107,8 @@ await signInWithPopup(auth, provider);
 onAuthStateChanged(auth,(user)=>{
 
 if(user){
+
+currentUser = user;
 
 console.log("Email użytkownika:", user.email);
   
@@ -215,11 +222,47 @@ document.getElementById("awayTeam").value = "";
 loadMatches();
 
 });
-window.savePrediction = function(matchId){
+window.savePrediction = async function(matchId){
 
-alert("Typ dla meczu: " + matchId);
+if(!currentUser){
+
+alert("Najpierw się zaloguj");
+return;
 
 }
+
+const homeScore =
+document.getElementById(`home_${matchId}`).value;
+
+const awayScore =
+document.getElementById(`away_${matchId}`).value;
+
+if(homeScore === "" || awayScore === ""){
+
+alert("Podaj wynik");
+return;
+
+}
+
+await setDoc(
+doc(
+db,
+"predictions",
+matchId + "_" + currentUser.uid
+),
+{
+matchId,
+userId: currentUser.uid,
+userName: currentUser.displayName,
+homeScore: Number(homeScore),
+awayScore: Number(awayScore),
+createdAt: Date.now()
+}
+);
+
+alert("Typ zapisany");
+
+};
 loadMatches();
 
 </script>
