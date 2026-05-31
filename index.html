@@ -221,8 +221,14 @@ html += `
         style="width:60px;"
     >
 
-  <button onclick="togglePredictions('${doc.id}')">
-📋 Typy meczu
+    <button onclick="savePrediction('${doc.id}')">
+Zapisz typ
+</button>
+
+  <button
+id="btn_${doc.id}"
+onclick="togglePredictions('${doc.id}')">
+📋 Pokaż typy
 </button>
 
 <div id="predictions_${doc.id}" style="display:none;"></div>
@@ -509,8 +515,6 @@ html;
 
 }
 
-window.showPredictions = async function(matchId){
-
 window.togglePredictions = async function(matchId){
 
 const container =
@@ -530,19 +534,10 @@ if(container.style.display === "block"){
 
 };
 
+window.showPredictions = async function(matchId){
+
 const container =
 document.getElementById(`predictions_${matchId}`);
-
-if(container.innerHTML !== ""){
-
-    container.innerHTML = "";
-
-    document.getElementById(`btn_${matchId}`).innerHTML =
-    "📋 Pokaż typy";
-    
-    return;
-
-}
 
 const predictionsQuery = query(
     collection(db,"predictions"),
@@ -605,6 +600,9 @@ if(rankingVisible){
 
     rankingDiv.style.display = "none";
 
+    document.getElementById("showRankingBtn").innerHTML =
+    "🏆 Ranking";
+
     rankingVisible = false;
 
 }else{
@@ -613,13 +611,15 @@ if(rankingVisible){
 
     rankingDiv.style.display = "block";
 
+    document.getElementById("showRankingBtn").innerHTML =
+    "❌ Ukryj ranking";
+
     rankingVisible = true;
 
 }
 
 });
 
-loadRanking();
 loadMatches();
 
 
