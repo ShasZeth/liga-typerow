@@ -62,7 +62,10 @@ Brak meczów
 🏆 Ranking
 </button>
 
-<div id="rankingList" style="margin-top:20px;"></div>
+<div
+id="rankingList"
+style="margin-top:20px;display:none;"
+></div>
 
     </div>
 
@@ -218,11 +221,7 @@ html += `
         style="width:60px;"
     >
 
-   <button onclick="savePrediction('${doc.id}')">
-    Zapisz typ
-</button>
-
-<button onclick="togglePredictions('${doc.id}')">
+  <button onclick="togglePredictions('${doc.id}')">
 📋 Typy meczu
 </button>
 
@@ -512,6 +511,25 @@ html;
 
 window.showPredictions = async function(matchId){
 
+window.togglePredictions = async function(matchId){
+
+const container =
+document.getElementById(`predictions_${matchId}`);
+
+if(container.style.display === "block"){
+
+    container.style.display = "none";
+
+}else{
+
+    container.style.display = "block";
+
+    await showPredictions(matchId);
+
+}
+
+};
+
 const container =
 document.getElementById(`predictions_${matchId}`);
 
@@ -585,28 +603,23 @@ document.getElementById("rankingList");
 
 if(rankingVisible){
 
-    rankingDiv.innerHTML = "";
-    rankingVisible = false;
+    rankingDiv.style.display = "none";
 
-    document.getElementById("showRankingBtn").innerHTML =
-    "🏆 Ranking";
+    rankingVisible = false;
 
 }else{
 
     await loadRanking();
-    rankingVisible = true;
 
-    document.getElementById("showRankingBtn").innerHTML =
-    "❌ Ukryj ranking";
+    rankingDiv.style.display = "block";
+
+    rankingVisible = true;
 
 }
 
 });
 
 loadRanking();
-
-});
-
 loadMatches();
 
 
