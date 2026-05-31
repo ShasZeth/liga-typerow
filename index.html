@@ -58,11 +58,12 @@ Brak meczów
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
     
 import {
-getFirestore,
-collection,
-addDoc
+getAuth,
+GoogleAuthProvider,
+signInWithPopup,
+onAuthStateChanged
 }
-from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
 const firebaseConfig = {
 
