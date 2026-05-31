@@ -520,13 +520,18 @@ window.togglePredictions = async function(matchId){
 const container =
 document.getElementById(`predictions_${matchId}`);
 
+const button =
+document.getElementById(`btn_${matchId}`);
+
 if(container.style.display === "block"){
 
     container.style.display = "none";
+    button.innerHTML = "📋 Pokaż typy";
 
 }else{
 
     container.style.display = "block";
+    button.innerHTML = "❌ Ukryj typy";
 
     await showPredictions(matchId);
 
@@ -582,9 +587,6 @@ predictionsSnapshot.forEach((predictionDoc)=>{
 });
 
 container.innerHTML = html;
-
-document.getElementById(`btn_${matchId}`).innerHTML =
-"❌ Ukryj typy";
 
 };
 
