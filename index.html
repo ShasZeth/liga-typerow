@@ -73,7 +73,8 @@ addDoc,
 getDocs,
 doc,
 setDoc,
-getDoc
+getDoc,
+updateDoc
 }
 from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
@@ -277,6 +278,45 @@ createdAt: Date.now()
 alert("Typ zapisany");
 
 };
+
+window.saveResult = async function(matchId){
+
+if(!currentUser){
+    alert("Zaloguj się");
+    return;
+}
+
+if(currentUser.email !== ADMIN_EMAIL){
+    alert("Tylko administrator może zapisać wynik");
+    return;
+}
+
+const homeResult =
+document.getElementById(`result_home_${matchId}`).value;
+
+const awayResult =
+document.getElementById(`result_away_${matchId}`).value;
+
+if(homeResult === "" || awayResult === ""){
+    alert("Podaj wynik końcowy");
+    return;
+}
+
+await updateDoc(
+doc(db,"matches",matchId),
+{
+homeResult: Number(homeResult),
+awayResult: Number(awayResult),
+finished: true
+}
+);
+
+alert("Wynik zapisany");
+
+loadMatches();
+
+};
+
 loadMatches();
 
 </script>
