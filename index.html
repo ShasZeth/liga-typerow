@@ -222,6 +222,12 @@ html += `
     Zapisz typ
 </button>
 
+<button onclick="showPredictions('${doc.id}')">
+    📋 Pokaż typy
+</button>
+
+<div id="predictions_${doc.id}"></div>
+
 <hr>
 
 <h4>Wynik końcowy</h4>
@@ -511,11 +517,65 @@ html;
 document.getElementById("showRankingBtn")
 .addEventListener("click", ()=>{
 
+async function showPredictions(matchId){
+
+const predictionsQuery = query(
+    collection(db,"predictions"),
+    where("matchId","==",matchId)
+);
+
+const predictionsSnapshot =
+await getDocs(predictionsQuery);
+
+let html = "<h3>Typy użytkowników</h3>";
+
+predictionsSnapshot.forEach((predictionDoc)=>{
+
+    const prediction = predictionDoc.data();
+
+    let color = "#999";
+
+    if(prediction.points === 2){
+        color = "green";
+    }else if(prediction.points === 1){
+        color = "orange";
+    }else if(prediction.points === 0){
+        color = "red";
+    }
+
+    html += `
+    <div style="
+        padding:8px;
+        margin:4px 0;
+        border:1px solid #ccc;
+    ">
+        <span style="
+            color:${color};
+            font-weight:bold;
+        ">
+            ${prediction.userName}
+        </span>
+        → ${prediction.homeScore}:${prediction.awayScore}
+        (${prediction.points ?? "-"} pkt)
+    </div>
+    `;
+});
+
+document.getElementById("rankingList").innerHTML =
+html;
+
+}
+
+
+document.getElementById("showRankingBtn")
+.addEventListener("click", ()=>{
+
 loadRanking();
 
 });
 
 loadMatches();
+
 
 </script>
 
