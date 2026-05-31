@@ -7,18 +7,150 @@
 <style>
 body{
     font-family:Arial,sans-serif;
-    background:#f4f4f4;
+    margin:0;
     padding:20px;
+
+    background-image:url("https://images.unsplash.com/photo-1574629810360-7efbbe195018");
+    background-size:cover;
+    background-position:center;
+    background-attachment:fixed;
 }
+
 .container{
     max-width:900px;
     margin:auto;
-    background:white;
-    padding:20px;
-    border-radius:10px;
+
+    background:rgba(255,255,255,0.95);
+
+    padding:25px;
+
+    border-radius:15px;
+
+    box-shadow:
+    0 10px 30px rgba(0,0,0,0.25);
 }
+
+h1{
+    text-align:center;
+    color:#1b5e20;
+}
+
+h2{
+    color:#1b5e20;
+}
+
+h3{
+    margin-top:0;
+}
+
 button{
-    padding:10px 20px;
+
+    background:#2e7d32;
+    color:white;
+
+    border:none;
+
+    padding:10px 18px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    font-weight:bold;
+
+    transition:0.3s;
+}
+
+button:hover{
+
+    background:#1b5e20;
+    transform:translateY(-2px);
+
+}
+
+input{
+
+    padding:8px;
+
+    border:1px solid #ccc;
+
+    border-radius:6px;
+
+    margin:4px;
+
+}
+
+#matchesList > div{
+
+    background:white;
+
+    border-radius:12px;
+
+    padding:15px;
+
+    margin-bottom:15px;
+
+    box-shadow:
+    0 2px 10px rgba(0,0,0,0.1);
+
+}
+
+#rankingList div{
+
+    background:#f5f5f5;
+
+    border-left:5px solid #2e7d32;
+
+    border-radius:8px;
+
+    margin-bottom:8px;
+
+}
+
+#userInfo{
+
+    font-weight:bold;
+
+    color:#333;
+}
+
+hr{
+
+    border:none;
+
+    height:1px;
+
+    background:#ddd;
+
+    margin:20px 0;
+
+}
+
+#showRankingBtn{
+
+    width:100%;
+    font-size:16px;
+
+}
+
+#loginBtn{
+
+    background:#4285F4;
+}
+
+#loginBtn:hover{
+
+    background:#3367D6;
+}
+
+#logoutBtn{
+
+    background:#d32f2f;
+}
+
+#logoutBtn:hover{
+
+    background:#b71c1c;
 }
 </style>
 </head>
@@ -26,7 +158,11 @@ button{
 
 <div class="container">
     <h1>⚽ Liga Typerów</h1>
-
+    
+        <p style="text-align:center;color:#666;">
+        Typuj mecze, zdobywaj punkty i walcz o pierwsze miejsce 🏆
+        </p>
+    
     <button id="loginBtn">Zaloguj przez Google</button>
     <p id="userInfo">Nie zalogowano</p>
 
