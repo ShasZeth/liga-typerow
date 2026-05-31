@@ -287,15 +287,21 @@ document.getElementById("userInfo").innerHTML =
 document.getElementById("loginBtn").style.display =
 "none";
 
+loadMatches();
+
 document.getElementById("logoutBtn").style.display =
 "inline-block";
 
+loadMatches();
+    
 if(user.email === ADMIN_EMAIL){
 
 document.getElementById("adminPanel").style.display =
 "block";
 
 }
+
+loadMatches();
 
 }else{
 
@@ -312,6 +318,8 @@ document.getElementById("logoutBtn").style.display =
 
 document.getElementById("adminPanel").style.display =
 "none";
+    
+loadMatches();
 
 }
 
