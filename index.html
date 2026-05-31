@@ -105,12 +105,15 @@ measurementId: "G-F176F0NY3D"
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const ADMIN_EMAIL = "kimiszymi@gmail.com";
-    
 const db = getFirestore(app);
-    let currentUser = null;
 
-    
+const ADMIN_EMAIL = "kimiszymi@gmail.com";
+
+let currentUser = null;
+
+
+// LOGOWANIE
+
 document.getElementById("loginBtn")
 .addEventListener("click", async ()=>{
 
@@ -118,14 +121,20 @@ const provider = new GoogleAuthProvider();
 
 await signInWithPopup(auth, provider);
 
+});
+
+
+// WYLOGOWANIE
+
 document.getElementById("logoutBtn")
 .addEventListener("click", async ()=>{
 
 await signOut(auth);
 
-alert("Wylogowano");
-
 });
+
+
+// OBSŁUGA STANU LOGOWANIA
 
 onAuthStateChanged(auth,(user)=>{
 
@@ -133,19 +142,14 @@ if(user){
 
 currentUser = user;
 
-document.getElementById("logoutBtn").style.display =
-"inline-block";
+document.getElementById("userInfo").innerHTML =
+"Zalogowany: " + user.displayName;
 
 document.getElementById("loginBtn").style.display =
 "none";
 
-currentUser = user;
-
-console.log("Email użytkownika:", user.email);
-  
-
-document.getElementById("userInfo").innerHTML =
-"Zalogowany: " + user.displayName;
+document.getElementById("logoutBtn").style.display =
+"inline-block";
 
 if(user.email === ADMIN_EMAIL){
 
@@ -161,14 +165,14 @@ currentUser = null;
 document.getElementById("userInfo").innerHTML =
 "Nie zalogowano";
 
-document.getElementById("adminPanel").style.display =
-"none";
+document.getElementById("loginBtn").style.display =
+"inline-block";
 
 document.getElementById("logoutBtn").style.display =
 "none";
 
-document.getElementById("loginBtn").style.display =
-"inline-block";
+document.getElementById("adminPanel").style.display =
+"none";
 
 }
 
