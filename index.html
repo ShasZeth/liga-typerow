@@ -304,7 +304,20 @@ document.getElementById("loginBtn")
 
 const provider = new GoogleAuthProvider();
 
+const result =
 await signInWithPopup(auth, provider);
+
+const user = result.user;
+
+await setDoc(
+doc(db,"users",user.uid),
+{
+nickname:user.displayName,
+email:user.email,
+role:"user"
+},
+{ merge:true }
+);
 
 });
 
@@ -404,11 +417,9 @@ await signOut(auth);
 
 // OBSŁUGA STANU LOGOWANIA
 
-onAuthStateChanged(auth,(user)=>{
+onAuthStateChanged(auth, async (user)=>{
 
 if(user){
-
-currentUser = user;
 
 const userRef =
 doc(db,"users",user.uid);
@@ -526,7 +537,7 @@ onclick="togglePredictions('${doc.id}')">
 
 <hr>
 
-${currentUser && currentADMINS.includes(currentNickname) ? `
+${currentUser && ADMINS.includes(currentNickname) ? `
 <h4>Wynik końcowy</h4>
 
 <input
@@ -650,7 +661,7 @@ predictionRef,
 {
 matchId,
 userId: currentUser.uid,
-userName: currentUser.currentNickname,
+userName: currentNickname,
 homeScore: Number(homeScore),
 awayScore: Number(awayScore),
 createdAt: Date.now()
@@ -668,9 +679,10 @@ if(!currentUser){
     return;
 }
 
-if(currentUser.email !== ADMIN_EMAIL){
-    alert("Tylko administrator może zapisać wynik");
-    return;
+if(!ADMINS.includes(currentNickname)){
+
+alert("Tylko administrator może zapisać wynik");
+return;
 }
 
 const homeResult =
