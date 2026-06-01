@@ -291,7 +291,10 @@ const ADMINS = [
     "Saycheese",
     "Shas Zeth"
 ];
-const ADMIN_EMAIL = "kimiszymi@gmail.com";
+
+const ADMIN_EMAILS = [
+    "kimiszymi@gmail.com"
+];
 
 let currentUser = null;
 let currentNickname = "";
@@ -302,12 +305,14 @@ let currentNickname = "";
 document.getElementById("loginBtn")
 .addEventListener("click", async ()=>{
 
-const provider = new GoogleAuthProvider();
+const provider =
+new GoogleAuthProvider();
 
 const result =
 await signInWithPopup(auth, provider);
 
-const user = result.user;
+const user =
+result.user;
 
 await setDoc(
 doc(db,"users",user.uid),
@@ -318,8 +323,6 @@ role:"user"
 },
 { merge:true }
 );
-
-});
 
 document
 .getElementById("registerBtn")
@@ -429,13 +432,13 @@ await getDoc(userRef);
 
 if(userSnap.exists()){
 
-currentNickname =
-userSnap.data().nickname;
+    currentNickname =
+    userSnap.data().nickname;
 
 }else{
 
-currentNickname =
-user.currentNickname || "Użytkownik";
+    currentNickname =
+    user.displayName || "Użytkownik";
 
 }
 
@@ -452,10 +455,20 @@ document.getElementById("logoutBtn").style.display =
 
 loadMatches();
     
-if(ADMINS.includes(currentNickname)){
+const isAdmin =
 
-document.getElementById("adminPanel").style.display =
-"block";
+    ADMINS.includes(currentNickname) ||
+    ADMIN_EMAILS.includes(user.email);
+
+if(isAdmin){
+
+    document.getElementById("adminPanel").style.display =
+    "block";
+
+}else{
+
+    document.getElementById("adminPanel").style.display =
+    "none";
 
 }
 
@@ -679,11 +692,15 @@ if(!currentUser){
     return;
 }
 
-if(!ADMINS.includes(currentNickname)){
+const isAdmin =
 
-alert("Tylko administrator może zapisać wynik");
-return;
-}
+    ADMINS.includes(currentNickname) ||
+    ADMIN_EMAILS.includes(currentUser.email);
+
+if(!isAdmin){
+
+    alert("Tylko administrator może zapisać wynik");
+    return;
 
 const homeResult =
 document.getElementById(`result_home_${matchId}`).value;
