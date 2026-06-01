@@ -460,6 +460,12 @@ const isAdmin =
     ADMINS.includes(currentNickname) ||
     ADMIN_EMAILS.includes(user.email);
 
+console.log("currentNickname:", currentNickname);
+console.log("user.email:", user.email);
+console.log("ADMINS:", ADMINS);
+console.log("ADMIN_EMAILS:", ADMIN_EMAILS);
+console.log("isAdmin:", isAdmin);
+
 if(isAdmin){
 
     document.getElementById("adminPanel").style.display =
