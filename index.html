@@ -424,6 +424,8 @@ onAuthStateChanged(auth, async (user)=>{
 
 if(user){
 
+currentUser = user;
+
 const userRef =
 doc(db,"users",user.uid);
 
@@ -556,7 +558,12 @@ onclick="togglePredictions('${doc.id}')">
 
 <hr>
 
-${currentUser && ADMINS.includes(currentNickname) ? `
+${currentUser &&
+(
+ADMINS.includes(currentNickname) ||
+ADMIN_EMAILS.includes(currentUser.email)
+)
+? `
 <h4>Wynik końcowy</h4>
 
 <input
@@ -707,6 +714,8 @@ if(!isAdmin){
 
     alert("Tylko administrator może zapisać wynik");
     return;
+
+}
 
 const homeResult =
 document.getElementById(`result_home_${matchId}`).value;
