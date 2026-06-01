@@ -162,6 +162,44 @@ hr{
         <p style="text-align:center;color:#666;">
         Typuj mecze, zdobywaj punkty i walcz o pierwsze miejsce 🏆
         </p>
+
+<h3>Rejestracja</h3>
+
+<input
+id="registerNick"
+placeholder="Nick"
+>
+
+<input
+type="password"
+id="registerPassword"
+placeholder="Hasło"
+>
+
+<button id="registerBtn">
+Załóż konto
+</button>
+
+<hr>
+
+<h3>Logowanie Nick + Hasło</h3>
+
+<input
+id="loginNick"
+placeholder="Nick"
+>
+
+<input
+type="password"
+id="loginPassword"
+placeholder="Hasło"
+>
+
+<button id="loginNickBtn">
+Zaloguj
+</button>
+
+<hr>
     
     <button id="loginBtn">Zaloguj przez Google</button>
     <p id="userInfo">Nie zalogowano</p>
@@ -214,7 +252,9 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   onAuthStateChanged,
-  signOut
+  signOut,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
 import {
@@ -246,9 +286,15 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+const ADMINS = [
+    "Elite Wizzle",
+    "Saycheese",
+    "Shas Zeth"
+];
 const ADMIN_EMAIL = "kimiszymi@gmail.com";
 
 let currentUser = null;
+let currentNickname = "";
 
 
 // LOGOWANIE
@@ -259,6 +305,89 @@ document.getElementById("loginBtn")
 const provider = new GoogleAuthProvider();
 
 await signInWithPopup(auth, provider);
+
+});
+
+document
+.getElementById("registerBtn")
+.addEventListener("click", async ()=>{
+
+const nick =
+document.getElementById("registerNick")
+.value
+.trim();
+
+const password =
+document.getElementById("registerPassword")
+.value;
+
+if(!nick || !password){
+
+alert("Podaj nick i hasło");
+return;
+
+}
+
+const email =
+nick.toLowerCase() + "@ligatyperow.pl";
+
+try{
+
+const userCredential =
+await createUserWithEmailAndPassword(
+auth,
+email,
+password
+);
+
+await setDoc(
+doc(db,"users",userCredential.user.uid),
+{
+nickname:nick,
+email:email,
+role:"user"
+}
+);
+
+alert("Konto utworzone");
+
+}catch(error){
+
+alert(error.message);
+
+}
+
+});
+
+document
+.getElementById("loginNickBtn")
+.addEventListener("click", async ()=>{
+
+const nick =
+document.getElementById("loginNick")
+.value
+.trim();
+
+const password =
+document.getElementById("loginPassword")
+.value;
+
+const email =
+nick.toLowerCase() + "@ligatyperow.pl";
+
+try{
+
+await signInWithEmailAndPassword(
+auth,
+email,
+password
+);
+
+}catch(error){
+
+alert("Błędny nick lub hasło");
+
+}
 
 });
 
@@ -281,8 +410,26 @@ if(user){
 
 currentUser = user;
 
+const userRef =
+doc(db,"users",user.uid);
+
+const userSnap =
+await getDoc(userRef);
+
+if(userSnap.exists()){
+
+currentNickname =
+userSnap.data().nickname;
+
+}else{
+
+currentNickname =
+user.currentNickname || "Użytkownik";
+
+}
+
 document.getElementById("userInfo").innerHTML =
-"Zalogowany: " + user.displayName;
+"Zalogowany: " + user.currentNickname;
 
 document.getElementById("loginBtn").style.display =
 "none";
@@ -294,7 +441,7 @@ document.getElementById("logoutBtn").style.display =
 
 loadMatches();
     
-if(user.email === ADMIN_EMAIL){
+if(ADMINS.includes(currentNickname)){
 
 document.getElementById("adminPanel").style.display =
 "block";
@@ -379,7 +526,7 @@ onclick="togglePredictions('${doc.id}')">
 
 <hr>
 
-${currentUser && currentUser.email === ADMIN_EMAIL ? `
+${currentUser && currentADMINS.includes(currentNickname) ? `
 <h4>Wynik końcowy</h4>
 
 <input
@@ -503,7 +650,7 @@ predictionRef,
 {
 matchId,
 userId: currentUser.uid,
-userName: currentUser.displayName,
+userName: currentUser.currentNickname,
 homeScore: Number(homeScore),
 awayScore: Number(awayScore),
 createdAt: Date.now()
