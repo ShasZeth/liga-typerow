@@ -266,6 +266,7 @@ doc,
 setDoc,
 getDoc,
 updateDoc,
+deleteDoc,
 query,
 where
 }
@@ -594,6 +595,15 @@ ADMIN_EMAILS.includes(currentUser.email)
 <button onclick="saveResult('${doc.id}')">
     Zapisz wynik
 </button>
+
+<button
+onclick="deleteMatch('${doc.id}')"
+style="
+background:#d32f2f;
+margin-left:10px;
+">
+🗑 Usuń mecz
+</button>
 ` : ""}
 
 ${match.finished ? `
@@ -734,6 +744,46 @@ if(homeResult === "" || awayResult === ""){
     alert("Podaj wynik końcowy");
     return;
 }
+
+window.deleteMatch = async function(matchId){
+
+const isAdmin =
+    ADMINS.includes(currentNickname) ||
+    ADMIN_EMAILS.includes(currentUser.email);
+
+if(!isAdmin){
+    return;
+}
+
+if(!confirm("Usunąć mecz i wszystkie typy?")){
+    return;
+}
+
+const predictionsQuery = query(
+    collection(db,"predictions"),
+    where("matchId","==",matchId)
+);
+
+const predictionsSnapshot =
+await getDocs(predictionsQuery);
+
+for(const predictionDoc of predictionsSnapshot.docs){
+
+    await deleteDoc(
+        doc(db,"predictions",predictionDoc.id)
+    );
+
+}
+
+await deleteDoc(
+    doc(db,"matches",matchId)
+);
+
+alert("Mecz usunięty");
+
+loadMatches();
+
+};
 
 await updateDoc(
     doc(db,"matches",matchId),
