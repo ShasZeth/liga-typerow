@@ -216,6 +216,16 @@ Wyloguj
 
 <input id="awayTeam" placeholder="Goście">
 
+<input
+type="date"
+id="matchDate"
+>
+
+<input
+type="time"
+id="matchTime"
+>
+
 <button id="addMatchBtn">
 Dodaj mecz
 </button>
@@ -531,8 +541,13 @@ html += `
 <div style="padding:10px;border:1px solid #ccc;margin:10px 0;">
 
     <h3>
-        ⚽ ${match.homeTeam} vs ${match.awayTeam}
-    </h3>
+⚽ ${match.homeTeam} vs ${match.awayTeam}
+</h3>
+
+<p>
+📅 ${match.matchDate}
+⏰ ${match.matchTime}
+</p>
 
     <input
         type="number"
@@ -635,7 +650,18 @@ document.getElementById("homeTeam").value;
 const awayTeam =
 document.getElementById("awayTeam").value;
 
-if(!homeTeam || !awayTeam){
+const matchDate =
+document.getElementById("matchDate").value;
+
+const matchTime =
+document.getElementById("matchTime").value;
+
+if(
+!homeTeam ||
+!awayTeam ||
+!matchDate ||
+!matchTime
+){
 
     alert("Uzupełnij drużyny");
     return;
@@ -647,6 +673,8 @@ await addDoc(
     {
         homeTeam,
         awayTeam,
+        matchDate,
+        matchTime,
         createdAt: Date.now()
     }
 );
