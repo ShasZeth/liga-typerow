@@ -817,6 +817,62 @@ loadMatches();
 
 };
 
+window.deleteMatch = async function(matchId){
+
+const isAdmin =
+
+    ADMINS.includes(currentNickname) ||
+    ADMIN_EMAILS.includes(currentUser?.email);
+
+if(!isAdmin){
+
+    alert("Brak uprawnień");
+    return;
+
+}
+
+if(!confirm("Czy na pewno usunąć ten mecz?")){
+
+    return;
+
+}
+
+try{
+
+    const predictionsQuery = query(
+        collection(db,"predictions"),
+        where("matchId","==",matchId)
+    );
+
+    const predictionsSnapshot =
+    await getDocs(predictionsQuery);
+
+    for(const predictionDoc of predictionsSnapshot.docs){
+
+        await deleteDoc(
+            doc(db,"predictions",predictionDoc.id)
+        );
+
+    }
+
+    await deleteDoc(
+        doc(db,"matches",matchId)
+    );
+
+    alert("Mecz usunięty");
+
+    loadMatches();
+
+}catch(error){
+
+    console.error(error);
+
+    alert("Błąd usuwania meczu");
+
+}
+
+};
+
 async function loadRanking(){
 
 const snapshot =
