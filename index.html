@@ -95,7 +95,8 @@ input{
 
 }
 
-#rankingList div{
+#rankingList div,
+#archiveList div{
 
     background:#f5f5f5;
 
@@ -251,6 +252,17 @@ id="rankingList"
 style="margin-top:20px;display:none;"
 ></div>
 
+<hr>
+
+<button id="showArchiveBtn">
+📦 Archiwum meczów
+</button>
+
+<div
+id="archiveList"
+style="margin-top:20px;display:none;"
+></div>
+
     </div>
 
 <script type="module">
@@ -314,6 +326,18 @@ const ADMIN_EMAILS = [
 
 let currentUser = null;
 let currentNickname = "";
+
+function isCurrentAdmin(){
+
+    return (
+        currentUser &&
+        (
+            ADMINS.includes(currentNickname) ||
+            ADMIN_EMAILS.includes(currentUser.email)
+        )
+    );
+
+}
 
 
 // LOGOWANIE
@@ -537,6 +561,10 @@ snapshot.forEach((doc)=>{
 
 const match = doc.data();
 
+if(match.archived === true){
+    return;
+}
+
 const matchDateTime = new Date(
     `${match.matchDate}T${match.matchTime}`
 );
@@ -642,6 +670,17 @@ margin-left:10px;
 ">
 🗑 Usuń mecz
 </button>
+
+${match.finished ? `
+<button
+onclick="archiveMatch('${doc.id}')"
+style="
+background:#555;
+margin-left:10px;
+">
+📦 Archiwizuj
+</button>
+` : ""}
 ` : ""}
 
 ${match.finished ? `
@@ -698,7 +737,14 @@ await addDoc(
         awayTeam,
         matchDate,
         matchTime,
-        createdAt: Date.now()
+        createdAt: Date.now(),
+
+        homeResult: null,
+        awayResult: null,
+
+        finished: false,
+        apiChecked: false,
+        archived: false
     }
 );
 
@@ -952,6 +998,153 @@ try{
 
 };
 
+
+window.archiveMatch = async function(matchId){
+
+if(!isCurrentAdmin()){
+
+    alert("Brak uprawnień");
+    return;
+
+}
+
+const matchRef =
+doc(db,"matches",matchId);
+
+const matchSnap =
+await getDoc(matchRef);
+
+if(!matchSnap.exists()){
+
+    alert("Nie znaleziono meczu");
+    return;
+
+}
+
+const match =
+matchSnap.data();
+
+if(!match.finished){
+
+    alert("Możesz archiwizować tylko zakończone mecze");
+    return;
+
+}
+
+if(!confirm("Przenieść ten zakończony mecz do archiwum?")){
+
+    return;
+
+}
+
+await updateDoc(
+    matchRef,
+    {
+        archived: true
+    }
+);
+
+alert("Mecz przeniesiony do archiwum");
+
+loadMatches();
+
+if(archiveVisible){
+
+    await loadArchiveMatches();
+
+}
+
+};
+
+window.restoreMatch = async function(matchId){
+
+if(!isCurrentAdmin()){
+
+    alert("Brak uprawnień");
+    return;
+
+}
+
+await updateDoc(
+    doc(db,"matches",matchId),
+    {
+        archived: false
+    }
+);
+
+alert("Mecz przywrócony z archiwum");
+
+loadMatches();
+
+if(archiveVisible){
+
+    await loadArchiveMatches();
+
+}
+
+};
+
+async function loadArchiveMatches(){
+
+const snapshot =
+await getDocs(collection(db,"matches"));
+
+let html =
+"<h2>📦 Archiwum meczów</h2>";
+
+snapshot.forEach((docSnap)=>{
+
+    const match =
+    docSnap.data();
+
+    if(match.archived !== true){
+        return;
+    }
+
+    html += `
+    <div style="
+    padding:10px;
+    margin:5px 0;
+    border:1px solid #ccc;
+    ">
+        <h3>
+            ⚽ ${match.homeTeam} vs ${match.awayTeam}
+        </h3>
+
+        <p>
+            📅 ${match.matchDate || "-"}
+            ⏰ ${match.matchTime || "-"}
+        </p>
+
+        ${match.finished ? `
+        <p>
+            🏁 Wynik końcowy:
+            <b>${match.homeResult}:${match.awayResult}</b>
+        </p>
+        ` : ""}
+
+        ${isCurrentAdmin() ? `
+        <button onclick="restoreMatch('${docSnap.id}')">
+            ↩️ Przywróć mecz
+        </button>
+        ` : ""}
+    </div>
+    `;
+
+});
+
+if(html === "<h2>📦 Archiwum meczów</h2>"){
+
+    html += "Brak zarchiwizowanych meczów";
+
+}
+
+document.getElementById("archiveList").innerHTML =
+html;
+
+}
+
+
 async function loadRanking(){
 
 const snapshot =
@@ -1099,6 +1292,38 @@ if(rankingVisible){
     "❌ Ukryj ranking";
 
     rankingVisible = true;
+
+}
+
+});
+
+let archiveVisible = false;
+
+document.getElementById("showArchiveBtn")
+.addEventListener("click", async ()=>{
+
+const archiveDiv =
+document.getElementById("archiveList");
+
+if(archiveVisible){
+
+    archiveDiv.style.display = "none";
+
+    document.getElementById("showArchiveBtn").innerHTML =
+    "📦 Archiwum meczów";
+
+    archiveVisible = false;
+
+}else{
+
+    await loadArchiveMatches();
+
+    archiveDiv.style.display = "block";
+
+    document.getElementById("showArchiveBtn").innerHTML =
+    "❌ Ukryj archiwum";
+
+    archiveVisible = true;
 
 }
 
