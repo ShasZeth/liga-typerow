@@ -555,11 +555,34 @@ await getDocs(collection(db,"matches"));
 
 console.log("Liczba dokumentów:", snapshot.size);
 
+const matches = [];
+
+snapshot.forEach((docSnap)=>{
+
+    matches.push({
+        id: docSnap.id,
+        data: docSnap.data()
+    });
+
+});
+
+matches.sort((a,b)=>{
+
+    const dateA =
+    new Date(`${a.data.matchDate || "9999-12-31"}T${a.data.matchTime || "23:59"}`);
+
+    const dateB =
+    new Date(`${b.data.matchDate || "9999-12-31"}T${b.data.matchTime || "23:59"}`);
+
+    return dateA - dateB;
+
+});
+
 let html = "";
 
-snapshot.forEach((doc)=>{
+matches.forEach((doc)=>{
 
-const match = doc.data();
+const match = doc.data;
 
 if(match.archived === true){
     return;
@@ -694,7 +717,7 @@ ${match.finished ? `
 `;
 
 });
-    
+
 if(html === ""){
     html = "Brak meczów";
 }
@@ -1089,13 +1112,36 @@ async function loadArchiveMatches(){
 const snapshot =
 await getDocs(collection(db,"matches"));
 
-let html =
-"<h2>📦 Archiwum meczów</h2>";
+const archivedMatches = [];
 
 snapshot.forEach((docSnap)=>{
 
+    archivedMatches.push({
+        id: docSnap.id,
+        data: docSnap.data()
+    });
+
+});
+
+archivedMatches.sort((a,b)=>{
+
+    const dateA =
+    new Date(`${a.data.matchDate || "9999-12-31"}T${a.data.matchTime || "23:59"}`);
+
+    const dateB =
+    new Date(`${b.data.matchDate || "9999-12-31"}T${b.data.matchTime || "23:59"}`);
+
+    return dateA - dateB;
+
+});
+
+let html =
+"<h2>📦 Archiwum meczów</h2>";
+
+archivedMatches.forEach((docSnap)=>{
+
     const match =
-    docSnap.data();
+    docSnap.data;
 
     if(match.archived !== true){
         return;
