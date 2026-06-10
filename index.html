@@ -1173,6 +1173,15 @@ archivedMatches.forEach((docSnap)=>{
         <button onclick="restoreMatch('${docSnap.id}')">
             ↩️ Przywróć mecz
         </button>
+
+        <button
+        onclick="deleteMatch('${docSnap.id}')"
+        style="
+        background:#d32f2f;
+        margin-left:10px;
+        ">
+            🗑 Usuń na stałe
+        </button>
         ` : ""}
     </div>
     `;
